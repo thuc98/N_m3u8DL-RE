@@ -336,7 +336,7 @@ internal class Program
             await extractor.FetchPlayListAsync(selectedStreams);
 
         // 直播检测
-        var livingFlag = selectedStreams.Any(s => s.Playlist?.IsLive == true) && !option.LivePerformAsVod;
+        var livingFlag = true; //selectedStreams.Any(s => s.Playlist?.IsLive == true) && !option.LivePerformAsVod;
         if (livingFlag)
         {
             Logger.WarnMarkUp($"[white on darkorange3_1]{ResString.liveFound}[/]");
