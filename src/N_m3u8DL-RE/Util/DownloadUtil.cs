@@ -10,6 +10,16 @@ internal static class DownloadUtil
 {
     private static readonly HttpClient AppHttpClient = HTTPUtil.AppHttpClient;
 
+    private static async Task<int> ReadWithTimeoutAsync(Stream stream, byte[] buffer, CancellationToken token, int timeoutMs = 6000)
+    {
+        var readTask = stream.ReadAsync(buffer, token).AsTask();
+        var completed = await Task.WhenAny(readTask, Task.Delay(timeoutMs, token));
+        if (completed != readTask)
+            throw new TimeoutException("Read stream timeout");
+    
+        return await readTask;
+    }
+    
     private static async Task<DownloadResult> CopyFileAsync(string sourceFile, string path, SpeedContainer speedContainer, long? fromPosition = null, long? toPosition = null)
     {
         using var inputStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -106,7 +116,7 @@ internal static class DownloadUtil
             var buffer = new byte[16 * 1024];
             var size = 0;
 
-            size = await responseStream.ReadAsync(buffer, cancellationTokenSource.Token);
+            size = await ReadWithTimeoutAsync(responseStream, buffer, cancellationTokenSource.Token, 6000);
             speedContainer.Add(size);
             await stream.WriteAsync(buffer.AsMemory(0, size));
             // 检测imageHeader
@@ -114,7 +124,7 @@ internal static class DownloadUtil
             // 检测GZip（For DDP Audio）
             bool gZipHeader = buffer.Length > 2 && buffer[0] == 0x1f && buffer[1] == 0x8b;
 
-            while ((size = await responseStream.ReadAsync(buffer, cancellationTokenSource.Token)) > 0)
+            while ((size = await ReadWithTimeoutAsync(responseStream, buffer, cancellationTokenSource.Token, 6000)) > 0)
             {
                 speedContainer.Add(size);
                 await stream.WriteAsync(buffer.AsMemory(0, size));
