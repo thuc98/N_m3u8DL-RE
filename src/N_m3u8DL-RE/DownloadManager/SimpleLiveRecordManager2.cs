@@ -343,11 +343,11 @@ internal class SimpleLiveRecordManager2
                 if (result is { Success: true })
                 {
                      task.Increment(1);
-                     Logger.WarnMarkUp($"[darkorange3_1]Download success {seg}[/]");
+                     Logger.WarnMarkUp($"[darkorange3_1]Download success {index}[/]");
                 } 
                 else
                 {
-                    Logger.WarnMarkUp($"[darkorange3_1]Download Failed {seg}[/]");
+                    Logger.WarnMarkUp($"[darkorange3_1]Download Failed {index}[/]");
                 }
                 // 实时解密
                 if (seg.IsEncrypted && DownloaderConfig.MyOptions.MP4RealTimeDecryption && result is { Success: true } && !string.IsNullOrEmpty(currentKID))
