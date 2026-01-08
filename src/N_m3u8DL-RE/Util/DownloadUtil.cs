@@ -1,4 +1,4 @@
-﻿using N_m3u8DL_RE.Common.Log;
+using N_m3u8DL_RE.Common.Log;
 using N_m3u8DL_RE.Common.Resource;
 using N_m3u8DL_RE.Common.Util;
 using N_m3u8DL_RE.Entity;
@@ -124,8 +124,17 @@ internal static class DownloadUtil
             // 检测GZip（For DDP Audio）
             bool gZipHeader = buffer.Length > 2 && buffer[0] == 0x1f && buffer[1] == 0x8b;
 
-            while ((size = await ReadWithTimeoutAsync(responseStream, buffer, cancellationTokenSource.Token, 6000)) > 0)
+            var segmentStart = DateTime.UtcNow;
+            const int SEGMENT_MAX_SECONDS = 10;
+
+            while ((size = await ReadWithTimeoutAsync(responseStream, buffer, cancellationTokenSource.Token, 4000)) > 0)
             {
+                if ((DateTime.UtcNow - segmentStart).TotalSeconds > SEGMENT_MAX_SECONDS)
+                {
+                    Logger.Warn("SEGMENT HARD TIMEOUT: " + url);
+                    throw new TimeoutException("Segment hard timeout");
+                }
+                
                 speedContainer.Add(size);
                 await stream.WriteAsync(buffer.AsMemory(0, size));
                 // 限速策略
