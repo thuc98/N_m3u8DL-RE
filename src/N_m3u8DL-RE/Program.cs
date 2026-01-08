@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using N_m3u8DL_RE.Parser.Config;
 using N_m3u8DL_RE.Common.Entity;
 using N_m3u8DL_RE.Common.Enum;
@@ -402,17 +402,20 @@ internal class Program
 
         if (extractor.ExtractorType == ExtractorType.HTTP_LIVE)
         {
+            Logger.InfoMarkUp(ResString.saveName + $"[deepskyblue1]HTTP LIVE[/]");
             var sldm = new HTTPLiveRecordManager(downloadConfig, selectedStreams, extractor);
             result = await sldm.StartRecordAsync();
         }
         else if (!livingFlag)
         {
             // 开始下载
+            Logger.InfoMarkUp(ResString.saveName + $"[deepskyblue1]Simple DOWNLOAD[/]");
             var sdm = new SimpleDownloadManager(downloadConfig, selectedStreams, extractor);
             result = await sdm.StartDownloadAsync();
         }
         else
         {
+            Logger.InfoMarkUp(ResString.saveName + $"[deepskyblue1]Simple DOWNLOAD 2[/]");
             var sldm = new SimpleLiveRecordManager2(downloadConfig, selectedStreams, extractor);
             result = await sldm.StartRecordAsync();
         }
