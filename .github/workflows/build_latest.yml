@@ -335,7 +335,7 @@ jobs:
     permissions:
       contents: write
     if: ${{ github.event.inputs.doRelease == 'true' }}
-    needs: [set-date,build-win-nt6_0-x86,build-win-x64-arm64,build-linux-x64-arm64,build-android-bionic-x64-arm64,build-linux-musl-x64,build-linux-musl-arm64,build-mac-x64-arm64]
+    needs: [set-date,build-linux-x64-arm64,build-linux-musl-x64,build-linux-musl-arm64]
     
     steps:
       - name: Fetch artifacts
