@@ -1,4 +1,4 @@
-﻿using Mp4SubtitleParser;
+using Mp4SubtitleParser;
 using N_m3u8DL_RE.Column;
 using N_m3u8DL_RE.Common.Entity;
 using N_m3u8DL_RE.Common.Enum;
@@ -341,7 +341,14 @@ internal class SimpleLiveRecordManager2
                 var result = await Downloader.DownloadSegmentAsync(seg, path, speedContainer, headers);
                 FileDic[seg] = result;
                 if (result is { Success: true })
-                    task.Increment(1);
+                {
+                     task.Increment(1);
+                     Logger.WarnMarkUp($"[darkorange3_1]Download success {seg}[/]");
+                } 
+                else
+                {
+                    Logger.WarnMarkUp($"[darkorange3_1]Download Failed {seg}[/]");
+                }
                 // 实时解密
                 if (seg.IsEncrypted && DownloaderConfig.MyOptions.MP4RealTimeDecryption && result is { Success: true } && !string.IsNullOrEmpty(currentKID))
                 {
